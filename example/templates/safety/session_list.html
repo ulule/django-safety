@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n future %}
+
+{% block content %}
+    <h1>{% trans "Active Sessions" %}</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{% trans "Last Activity" %}</th>
+                <th>{% trans "Device" %}</th>
+                <th>{% trans "End Session" %}</th>
+            </tr>
+        </thead>
+        {% for object in object_list %}
+        <tr {% if object.session_key == request.session.session_key %}class="active"{% endif %}>
+            <td>
+                {% if object.session_key == request.session.session_key %}
+                    {% blocktrans with time=object.last_activity|timesince %}{{ time }} ago (this session){% endblocktrans %}
+                {% else %}
+                    {% blocktrans with time=object.last_activity|timesince %}{{ time }} ago{% endblocktrans %}
+                {% endif %}
+            </td>
+            <td>{{ object.device }}</td>
+            <td>
+                <form method="post" action="{% url 'safety:session_delete' object.pk %}">
+                    {% csrf_token %}
+                    {% if object.session_key == request.session.session_key %}
+                        <button type="submit" class="btn btn-xs btn-link">{% trans "End Session" %}</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-xs btn-warning">{% trans "End Session" %}</button>
+                    {% endif %}
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% if object_list.count > 1 %}
+        <form method="post" action="{% url 'safety:session_delete_other' %}">
+            {% csrf_token %}
+            <p>
+               {% blocktrans %}You can also end all other sessions but the current.
+               This will log you out on all other devices.{% endblocktrans %}
+           </p>
+           <button type="submit" class="btn btn-default btn-warning">{% trans "End All Other Sessions" %}</button>
+        </form>
+    {% endif %}
+{% endblock %}
