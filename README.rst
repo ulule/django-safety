@@ -3,14 +3,13 @@ django-safety
 
 **Django application to list and disable user active sessions.**
 
-This application is a lightweight version of django-user-session_.
+This application is a lightweight version of `django-user-session`_.
 
 The changes are:
 
 * No middeware
 * Does not touch to ``django.contrib.sessions``
 * Does not touch to `django.contrib.sessions.middleware.SessionMiddleware`
-* No GeoIP
 * Works with any session engine
 
 How it works
