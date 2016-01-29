@@ -1,6 +1,7 @@
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 SECRET_KEY = 'zn=kw41f9nhe1lse8minnu0s-@7b+q(exccs5d-1vil$^ees&#'
 DEBUG = True
 ALLOWED_HOSTS = []
@@ -71,3 +72,4 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'auth.User'
 LOGIN_URL = '/admin/login/'
+GEOIP_PATH = BASE_DIR
