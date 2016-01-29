@@ -11,6 +11,12 @@ pep8:
 test:
 	@(py.test -s --cov-report term --cov-config .coveragerc --cov=safety --color=yes safety/tests)
 
+geoip:
+	@(wget -O city.mmdb.gz http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz)
+	@(wget -O country.mmdb.gz http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz)
+	@(gunzip city.mmdb.gz)
+	@(gunzip country.mmdb.gz)
+
 example-clean:
 	@(rm -rf example.db)
 
