@@ -9,8 +9,9 @@ from .models import Session
 
 class SessionMixin(object):
     def get_queryset(self):
-        return (Session.objects.filter(expire_date__gt=now())
-                               .order_by('-last_activity'))
+        qs = Session.objects.filter(expire_date__gt=now(), user=self.request.user)
+        qs = qs.order_by('-last_activity')
+        return qs
 
 
 class LoginRequiredMixin(object):
