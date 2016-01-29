@@ -1,15 +1,19 @@
 django-safety
 =============
 
-**Django application to list and disable user active sessions.**
+*Django application to control user sessions.*
 
-This application is a lightweight version of `django-user-session`_.
+Description
+-----------
 
-The changes are:
+This application is a lightweight version of
+`django-user-session <https://github.com/Bouke/django-user-sessions>`_.
+
+The main changes are:
 
 * No middeware
 * Does not touch to ``django.contrib.sessions``
-* Does not touch to `django.contrib.sessions.middleware.SessionMiddleware`
+* Does not touch to ``django.contrib.sessions.middleware.SessionMiddleware``
 * Works with any session engine
 
 How it works
@@ -29,6 +33,33 @@ How it works
 
 Installation
 ------------
+
+First, you need to install GeoIP.
+
+On OS X with Homebrew:
+
+.. code-block:: bash
+
+    brew install geoip
+
+Then, you need GeoIP databases.
+
+For Django >= 1.9, download City and Country databases as binary (not CSV):
+
+http://dev.maxmind.com/geoip/geoip2/geolite2/
+
+For Django 1.8, download City and Country legacy databases as binary (not CSV):
+
+http://dev.maxmind.com/geoip/legacy/geolite/
+
+Create a directory wherever you want and uncompress these archives this
+directory. Once done, set ``GEOIP_PATH`` setting pointing to this directory:
+
+.. code-block:: python
+
+    GEOIP_PATH = '/absolute/path/to/maxmind/db/directory'
+
+Now, let's install django-safety:
 
 .. code-block:: bash
 
@@ -68,6 +99,9 @@ Development
     $ make devenv
     $ source .venv/bin/activate
 
+    # Download GeoIP databases
+    $ make geoip
+    
     # Launch test suite
     $ make test
 
@@ -81,5 +115,4 @@ Compatibility
 
 - python 2.7: Django 1.8, 1.9
 - Python 3.4: Django 1.8, 1.9
-
-.. _django-user-sessions: https://github.com/Bouke/django-user-sessions
+- Python 3.5: Django 1.8, 1.9
