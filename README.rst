@@ -3,9 +3,6 @@ django-safety
 
 *Django application to control user sessions.*
 
-Description
------------
-
 This application is a lightweight version of
 `django-user-session <https://github.com/Bouke/django-user-sessions>`_.
 
@@ -101,7 +98,7 @@ Development
 
     # Download GeoIP databases
     $ make geoip
-    
+
     # Launch test suite
     $ make test
 
