@@ -15,9 +15,7 @@ def get_session_store():
     return store
 
 
-def get_resolver(request, setting):
-    module_path = getattr(app_settings, setting)
-
+def resolve(module_path, request):
     try:
         module, attribute = module_path.rsplit('.', 1)
         resolver_module = import_module(module)
@@ -26,12 +24,12 @@ def get_resolver(request, setting):
     except ImportError:
         raise ImproperlyConfigured(
             "Please specify a valid %s module. "
-            "Could not find %s " % (setting, module))
+            "Could not find %s " % (module_path, module))
 
     except AttributeError:
         raise ImproperlyConfigured(
             "Please specify a valid %s "
             "function. Could not find %s function in module %s" %
-            (setting, attribute, module))
+            (module_path, attribute, module))
 
     return resolver(request)
