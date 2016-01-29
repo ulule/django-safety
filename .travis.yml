@@ -1,9 +1,11 @@
 language: python
 env:
     - TOXENV=py27-django18
-    - TOXENV=py27-django19
     - TOXENV=py34-django18
+    - TOXENV=py35-django18
+    - TOXENV=py27-django19
     - TOXENV=py34-django19
+    - TOXENV=py35-django19
 install:
     - travis_retry pip install tox
 script:
