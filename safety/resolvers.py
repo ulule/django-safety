@@ -58,14 +58,16 @@ def device(request):
 
     infos = []
     for unknown, dct in (ua_parsed, os_parsed):
-        family = dct.pop('family')
-        if family is None:
-            infos.append(unknown)
+        d = dct.copy()
 
-        version = '.'.join([v for k, v in six.iteritems(dct) if v is not None])
+        family = d.pop('family')
+        if family is None or family == 'Other':
+            infos.append(unknown)
+            continue
+
+        version = '.'.join([v for k, v in six.iteritems(d) if v is not None])
         if version:
             family = '%s %s' % (family, version)
-
         infos.append(family)
 
     return ' - '. join(infos)
