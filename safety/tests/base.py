@@ -7,12 +7,15 @@ from exam.cases import Exam
 from exam.decorators import fixture
 
 
-UA = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) '
-      'AppleWebKit/536.26.17 (KHTML, like Gecko) Version/6.0.2 '
-      'Safari/536.26.17')
-
-
 class Fixtures(Exam):
+    UA = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) '
+          'AppleWebKit/536.26.17 (KHTML, like Gecko) Version/6.0.2 '
+          'Safari/536.26.17')
+
+    DEVICE = 'Safari 6.0.2 - Mac OS X 10.8.2'
+    LOCATION = 'Mountain View, United States'
+    REMOTE_ADDR = '66.249.64.0'
+
     @fixture
     def user(self):
         return User.objects.create_superuser(
@@ -30,5 +33,5 @@ class BaseTestCase(Fixtures, TestCase):
                 'username': self.user.username,
                 'password': 'secret',
                 'next': '/admin/'},
-                REMOTE_ADDR='127.0.0.1',
-                HTTP_USER_AGENT=UA)
+                REMOTE_ADDR=self.REMOTE_ADDR,
+                HTTP_USER_AGENT=self.UA)
