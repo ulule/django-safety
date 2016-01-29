@@ -24,7 +24,7 @@ else:
 setup(
     name='django-safety',
     version=version,
-    description='Django application to control user sessions',
+    description='Django application to control user active sessions',
     long_description=readme,
     author='Gilles Fabio',
     author_email='gilles.fabio@gmail.com',
