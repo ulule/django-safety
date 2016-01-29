@@ -39,3 +39,4 @@ target/
 geoip
 *.mmdb
 *.gz
+*.dat
