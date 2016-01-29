@@ -1,56 +1,37 @@
 # -*- coding: utf-8 -*-
-import importlib
-import re
-import warnings
+try:
+    from django.utils.importlib import import_module
+except ImportError:
+    from importlib import import_module
 
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _, ugettext
-
-
-BROWSERS = (
-    (re.compile('Chrome'), _('Chrome')),
-    (re.compile('Safari'), _('Safari')),
-    (re.compile('Firefox'), _('Firefox')),
-    (re.compile('Opera'), _('Opera')),
-    (re.compile('IE'), _('Internet Explorer')),
-)
-
-DEVICES = (
-    (re.compile('Android'), _('Android')),
-    (re.compile('Linux'), _('Linux')),
-    (re.compile('iPhone'), _('iPhone')),
-    (re.compile('iPad'), _('iPad')),
-    (re.compile('(Mac OS X)'), _('OS X')),
-    (re.compile('NT 5.1'), _('Windows XP')),
-    (re.compile('NT 6.0'), _('Windows Vista')),
-    (re.compile('NT 6.1'), _('Windows 7')),
-    (re.compile('NT 6.2'), _('Windows 8')),
-    (re.compile('NT 6.3'), _('Windows 8.1')),
-    (re.compile('Windows'), _('Windows')),
-)
-
-
-def get_device(user_agent):
-    """
-    Transform a User Agent into a human readable text.
-    """
-    infos = []
-
-    for regex, name in BROWSERS:
-        if regex.search(user_agent):
-            infos.append('%s' % name)
-            break
-
-    for regex, name in DEVICES:
-        if regex.search(user_agent):
-            infos.append('%s' % name)
-            break
-
-    return ', '.join(infos)
+from django.core.exceptions import ImproperlyConfigured
 
 
 def get_session_store():
     mod = getattr(settings, 'SESSION_ENGINE', 'django.contrib.sessions.backends.db')
-    engine = importlib.import_module(mod)
+    engine = import_module(mod)
     store = engine.SessionStore()
     return store
+
+
+def get_resolver(request, setting):
+    module_path = getattr(app_settings, setting)
+
+    try:
+        module, attribute = module_path.rsplit('.', 1)
+        resolver_module = import_module(module)
+        resolver = getattr(resolver_module, attribute)
+
+    except ImportError:
+        raise ImproperlyConfigured(
+            "Please specify a valid %s module. "
+            "Could not find %s " % (setting, module))
+
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Please specify a valid %s "
+            "function. Could not find %s function in module %s" %
+            (setting, attribute, module))
+
+    return resolver(request)
