@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
-import django
-
-if django.VERSION >= 1.9:
-    from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
-else:
-    from django.contrib.gis.geoip import GeoIP
-
 from django.utils.translation import ugettext
 
 import six
-
 from ua_parser import user_agent_parser
 
 from . import app_settings
 from . import utils
+from .compat import GeoIP
 
 
 def remote_addr_ip(request):
@@ -65,7 +58,7 @@ def device(request):
             infos.append(unknown)
             continue
 
-        version = '.'.join([v for k, v in six.iteritems(d) if v is not None])
+        version = '.'.join([d.get(k) for k in ('major', 'minor', 'patch') if d.get(k) is not None])
         if version:
             family = '%s %s' % (family, version)
         infos.append(family)
