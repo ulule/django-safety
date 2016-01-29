@@ -12,17 +12,16 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.http import cookie_date
 from django.utils.translation import ugettext_lazy as _
 
-from ipware.ip import get_ip
-
+from . import app_settings
 from . import utils
 
 
 class SessionManager(models.Manager):
     def create_session(self, request, user):
-        ip = get_ip(request) or ''
-        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        ip = utils.resolve(app_settings.IP_RESOLVER, request)
+        device = utils.resolve(app_settings.DEVICE_RESOLVER, request)
 
-        device = utils.get_device(user_agent)
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
         user_agent = user_agent[:200] if user_agent else user_agent
 
         return self.create(
