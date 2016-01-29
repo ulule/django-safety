@@ -20,6 +20,7 @@ class SessionManager(models.Manager):
     def create_session(self, request, user):
         ip = utils.resolve(app_settings.IP_RESOLVER, request)
         device = utils.resolve(app_settings.DEVICE_RESOLVER, request)
+        location = utils.resolve(app_settings.LOCATION_RESOLVER, request)
 
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         user_agent = user_agent[:200] if user_agent else user_agent
@@ -30,6 +31,7 @@ class SessionManager(models.Manager):
             ip=ip,
             user_agent=user_agent,
             device=device,
+            location=location,
             expire_date=request.session.get_expiry_date())
 
 
@@ -39,6 +41,7 @@ class Session(models.Model):
     session_key = models.CharField(verbose_name=_('session key'), max_length=40)
     ip = models.GenericIPAddressField(verbose_name=_('IP'))
     user_agent = models.CharField(verbose_name=_('user agent'), max_length=200)
+    location = models.CharField(verbose_name=_('location'), max_length=255)
     device = models.CharField(verbose_name=_('device'), max_length=200, blank=True, null=True)
     expire_date = models.DateTimeField(verbose_name=_('expiry date'), db_index=True)
     last_activity = models.DateTimeField(verbose_name=_('last activity'), auto_now=True)

@@ -1,9 +1,19 @@
 # -*- coding: utf-8 -*-
+import django
+
+if django.VERSION >= 1.9:
+    from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
+else:
+    from django.contrib.gis.geoip import GeoIP
+
 from django.utils.translation import ugettext
 
 import six
 
 from ua_parser import user_agent_parser
+
+from . import app_settings
+from . import utils
 
 
 def remote_addr_ip(request):
@@ -23,6 +33,7 @@ def x_forwarded_ip(request):
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     """
     ip_address_list = request.META.get('HTTP_X_FORWARDED_FOR')
+
     if ip_address_list:
         ip_address_list = ip_address_list.split(',')
         return ip_address_list[0]
@@ -58,3 +69,24 @@ def device(request):
         infos.append(family)
 
     return ' - '. join(infos)
+
+
+def location(request):
+    """
+    Transform an IP address into an approximate location.
+    """
+    ip = utils.resolve(app_settings.IP_RESOLVER, request)
+
+    try:
+        location = GeoIP() and GeoIP().city(ip)
+    except:
+        # Handle 127.0.0.1 and not found IPs
+        return ugettext('unknown')
+
+    if location and location['country_name']:
+        if location['city']:
+            return '%s, %s' % (location['city'], location['country_name'])
+        else:
+            return location['country_name']
+
+    return ugettext('unknown')

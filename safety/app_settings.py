@@ -7,8 +7,12 @@ IP_RESOLVER = getattr(
     'SAFETY_IP_RESOLVER',
     'safety.resolvers.remote_addr_ip')
 
-
 DEVICE_RESOLVER = getattr(
     settings,
     'SAFETY_DEVICE_RESOLVER',
     'safety.resolvers.device')
+
+LOCATION_RESOLVER = getattr(
+    settings,
+    'SAFETY_LOCATION_RESOLVER',
+    'safety.resolvers.location')

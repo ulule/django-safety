@@ -7,7 +7,7 @@ from .models import Session
 
 
 class SessionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'ip', 'last_activity', 'device', 'is_valid')
+    list_display = ('user', 'ip', 'last_activity', 'location', 'device', 'is_valid')
     raw_id_fields = ('user',)
 
     def is_valid(self, obj):
