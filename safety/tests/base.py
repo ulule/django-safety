@@ -6,6 +6,8 @@ from django.test import TestCase
 from exam.cases import Exam
 from exam.decorators import fixture
 
+from safety.models import Session
+
 
 class Fixtures(Exam):
     UA = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) '
@@ -36,3 +38,18 @@ class BaseTestCase(Fixtures, TestCase):
             },
             REMOTE_ADDR=self.REMOTE_ADDR,
             HTTP_USER_AGENT=self.UA)
+
+    def create_fake_sessions(self):
+        sessions = []
+        for x in range(10):
+            self.client.session.save()
+            session = Session.objects.create(
+                user=self.user,
+                session_key=self.client.session.session_key,
+                ip=self.REMOTE_ADDR,
+                location=self.LOCATION,
+                device=self.DEVICE,
+                user_agent=self.UA,
+                expire_date=self.client.session.get_expiry_date())
+            sessions.append(session)
+        return sessions
