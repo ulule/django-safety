@@ -12,8 +12,10 @@ test:
 	@(py.test -s --cov-report term --cov-config .coveragerc --cov=safety --color=yes safety/tests)
 
 geoip:
-	@(curl -o GeoLite2-City.mmdb.gz  http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz)
-	@(gunzip -f GeoLite2-City.mmdb.gz)
+	@(wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz)
+	@(wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz)
+	@(gunzip -d GeoLite2-City.mmdb.gz)
+	@(gunzip -d GeoLiteCity.dat.gz)
 
 example-clean:
 	@(rm -rf example.db)
