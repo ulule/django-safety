@@ -11,11 +11,16 @@ def get_session_store():
     return store
 
 
-def resolve(module_path, request):
+def resolve(path, request):
+    obj = import_from_path(path)
+    return obj(request)
+
+
+def import_from_path(path):
     try:
-        module, attribute = module_path.rsplit('.', 1)
-        resolver_module = import_module(module)
-        resolver = getattr(resolver_module, attribute)
+        module_path, attr = path.rsplit('.', 1)
+        module = import_module(module_path)
+        obj = getattr(module, attr)
     except Exception as e:
         raise e
-    return resolver(request)
+    return obj
