@@ -1,2 +1,2 @@
 six
-django-ipware
+ua-parser

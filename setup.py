@@ -13,7 +13,7 @@ with open(os.path.join(root, 'README.rst')) as f:
 setup(
     name='django-safety',
     version=version,
-    description='Django application to list and disable user active sessions',
+    description='Django application to control user sessions',
     long_description=README,
     author='Gilles Fabio',
     author_email='gilles.fabio@gmail.com',
@@ -21,6 +21,10 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     include_package_data=True,
+    install_requires=[
+        'six',
+        'ua-parser',
+    ],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
