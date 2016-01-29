@@ -24,6 +24,8 @@ setup(
     install_requires=[
         'six',
         'ua-parser',
+        'GeoIP',
+        'geoip2',
     ],
     classifiers=[
         'Environment :: Web Environment',
