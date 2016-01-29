@@ -3,11 +3,9 @@ from django.core.urlresolvers import reverse
 
 from .base import BaseTestCase
 
-from safety.models import Session
-
 
 class ViewsTest(BaseTestCase):
-    
+
     def test_session_list_view(self):
         self.login_user()
 

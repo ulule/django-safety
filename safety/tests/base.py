@@ -32,6 +32,7 @@ class BaseTestCase(Fixtures, TestCase):
             data={
                 'username': self.user.username,
                 'password': 'secret',
-                'next': '/admin/'},
-                REMOTE_ADDR=self.REMOTE_ADDR,
-                HTTP_USER_AGENT=self.UA)
+                'next': '/admin/',
+            },
+            REMOTE_ADDR=self.REMOTE_ADDR,
+            HTTP_USER_AGENT=self.UA)

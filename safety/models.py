@@ -9,7 +9,6 @@ from django.contrib.auth.signals import (
 from django.db.models.signals import post_delete
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.http import cookie_date
 from django.utils.translation import ugettext_lazy as _
 
 from . import app_settings

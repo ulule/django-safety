@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext
 
-import six
 from ua_parser import user_agent_parser
 
 from . import app_settings
