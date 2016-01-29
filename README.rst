@@ -1,20 +1,26 @@
 django-safety
 =============
 
-*Django application to control user sessions.*
+**Django application to control user active sessions.**
+
+.. image:: https://secure.travis-ci.org/ulule/django-safety.png?branch=master
+    :alt: Build Status
+    :target: http://travis-ci.org/ulule/django-safety
+
+How it works
+------------
 
 This application is a lightweight version of
 `django-user-session <https://github.com/Bouke/django-user-sessions>`_.
 
 The main changes are:
 
-* No middeware
+* Does not use middleware
 * Does not touch to ``django.contrib.sessions``
 * Does not touch to ``django.contrib.sessions.middleware.SessionMiddleware``
 * Works with any session engine
 
-How it works
-------------
+Workflow:
 
 1. User logs in
 2. We connect the logic to the ``user_logged_in`` signal
