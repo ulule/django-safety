@@ -38,3 +38,4 @@ target/
 *.db
 geoip
 *.mmdb
+*.gz
