@@ -73,3 +73,4 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'auth.User'
 LOGIN_URL = '/admin/login/'
 GEOIP_PATH = BASE_DIR
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
