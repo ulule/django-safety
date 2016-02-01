@@ -21,6 +21,10 @@ LoginRequiredMixin = utils.import_from_path(
     app_settings.LOGIN_REQUIRED_MIXIN_CLASS)
 
 
+# -----------------------------------------------------------------------------
+# Sessions
+# -----------------------------------------------------------------------------
+
 class SessionListView(LoginRequiredMixin, SessionMixin, ListView):
     pass
 
@@ -39,6 +43,10 @@ class SessionDeleteOtherView(LoginRequiredMixin, SessionMixin, DeletionMixin, Vi
     def get_success_url(self):
         return str(reverse_lazy('safety:session_list'))
 
+
+# -----------------------------------------------------------------------------
+# Password Reset
+# -----------------------------------------------------------------------------
 
 def redirect_to_password_reset(next_url):
     """

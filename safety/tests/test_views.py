@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 
-from safety.models import Session
+from safety.models import (
+    PasswordReset,
+    Session,
+)
 
 from .base import BaseTestCase
 
@@ -79,3 +82,45 @@ class ViewsTest(BaseTestCase):
 
         for session in fake_sessions:
             self.assertFalse(self.client.session.exists(session_key=session.session_key))
+
+    def test_password_reset(self):
+        self.assertEqual(PasswordReset.objects.count(), 0)
+        self.login_user()
+
+        # We don't force user to reset her password.
+        #
+        # At login, let's create a password_reset instance without
+        # forcing any update. The last_reset date must be None
+        # because it's the first time we create the object.
+
+        self.assertEqual(PasswordReset.objects.count(), 1)
+
+        obj = PasswordReset.objects.first()
+
+        self.assertEqual(obj.user, self.user)
+        self.assertEqual(obj.last_password, self.user.password)
+        self.assertFalse(obj.reset_required)
+        self.assertIsNone(obj.last_reset)
+
+        # Now, let's force user to reset her password.
+
+        obj.reset_required = True
+        obj.save()
+
+        r = self.client.get(reverse('home'))
+        self.assertRedirects(r, '%s?next=/' % reverse('password_reset'))
+
+        # Until the stored password is the same... we don't
+        # authorize user to log in.
+
+        self.login_user(password=self.USER_PASSWORD)
+        r = self.client.get(reverse('home'))
+        self.assertRedirects(r, '%s?next=/' % reverse('password_reset'))
+
+        # Now, let's reset our password.
+        self.user.set_password('wow')
+        self.user.save()
+
+        self.login_user(password='wow')
+        r = self.client.get(reverse('home'))
+        self.assertEqual(r.status_code, 200)

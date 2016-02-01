@@ -18,31 +18,39 @@ from . import utils
 
 # -----------------------------------------------------------------------------
 # PasswordReset
+#
+# Process is:
+#
+# - We set reset_required to True
+# - User logs in
+# - We retrieve related password_reset instance or we create it
+# - If created, we only store user and current password
+# - If exists, we compare passwords
+# - If password does not match, user has updated her password so we update instance
+#
 # -----------------------------------------------------------------------------
 
 class PasswordResetManager(models.Manager):
-    def get_for_user(self, user):
+    def get_or_create_for_user(self, user):
         try:
-            reset = PasswordReset.objects.get(user=user)
+            obj = PasswordReset.objects.get(user=user)
         except PasswordReset.DoesNotExist:
-            reset = PasswordReset.objects.create(
+            obj = PasswordReset.objects.create(
                 user=user,
-                last_reset=user.date_joined,
-                reset_required=False)
-        return reset
+                last_password=user.password)
+        return obj
 
-    def update_for_user(self, user):
-        try:
-            reset = PasswordReset.objects.get(user=user)
-            reset.last_reset = now
-            reset.reset_required = False
-            reset.save()
-        except PasswordReset.DoesNotExist:
-            reset = PasswordReset.objects.create(
-                user=user,
-                last_reset=user.date_joined,
-                reset_required=False)
-        return reset
+    def is_reset_required(self, user):
+        obj = self.get_or_create_for_user(user=user)
+        return obj.reset_required
+
+    def check_password(self, user):
+        obj = self.get_or_create_for_user(user=user)
+        if obj.last_password != user.password:
+            obj.last_password = user.password
+            obj.last_reset = now()
+            obj.reset_required = False
+            obj.save()
 
 
 @python_2_unicode_compatible
@@ -54,19 +62,17 @@ class PasswordReset(models.Model):
         related_name='safety_password_reset')
 
     reset_required = models.BooleanField(verbose_name=_('reset required'), db_index=True, default=False)
-    last_reset = models.DateTimeField(verbose_name=_('last reset'))
+    last_password = models.CharField(verbose_name=_('last password'), max_length=255)
+    last_reset = models.DateTimeField(verbose_name=_('last reset'), null=True, blank=True)
 
     objects = PasswordResetManager()
 
     class Meta:
         verbose_name = _('password reset')
         verbose_name_plural = _('password resets')
-        index_together = [
-            ['reset_required', 'last_reset'],
-        ]
 
     def __str__(self):
-        return '%s -- %s' % (self.user, self.last_reset)
+        return '%s - %s' % (self.user, self.last_reset)
 
 
 # -----------------------------------------------------------------------------
@@ -82,14 +88,17 @@ class SessionManager(models.Manager):
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         user_agent = user_agent[:200] if user_agent else user_agent
 
-        return self.create(
-            user=user,
-            session_key=request.session.session_key,
-            ip=ip,
-            user_agent=user_agent,
-            device=device,
-            location=location,
-            expiration_date=request.session.get_expiry_date())
+        try:
+            return self.get(session_key=request.session.session_key)
+        except Session.DoesNotExist:
+            return self.create(
+                user=user,
+                session_key=request.session.session_key,
+                ip=ip,
+                user_agent=user_agent,
+                device=device,
+                location=location,
+                expiration_date=request.session.get_expiry_date())
 
 
 @python_2_unicode_compatible
@@ -114,14 +123,21 @@ class Session(models.Model):
 
 
 # -----------------------------------------------------------------------------
-# Signals
+# Signal handlers
 # -----------------------------------------------------------------------------
 
-def user_logged_in_handler(sender, request, user, **kwargs):
+# Connected to user_logged_in
+def create_session(sender, request, user, **kwargs):
     Session.objects.create_session(request, user)
 
 
-def user_logged_out_handler(sender, request, user, **kwargs):
+# Connected to user_logged_in
+def check_password(sender, request, user, **kwargs):
+    PasswordReset.objects.check_password(user=user)
+
+
+# Connected to user_logged_out
+def delete_session(sender, request, user, **kwargs):
     try:
         key = request.session.session_key
         instance = Session.objects.get(user=user, session_key=key)
@@ -130,13 +146,15 @@ def user_logged_out_handler(sender, request, user, **kwargs):
         pass
 
 
-def post_delete_session_handler(sender, instance, **kwargs):
+# Connected to post_delete for Session model
+def post_delete_session(sender, instance, **kwargs):
     key = instance.session_key
     store = utils.get_session_store()
     if store.exists(session_key=key):
         store.delete(session_key=key)
 
 
-user_logged_in.connect(user_logged_in_handler)
-user_logged_out.connect(user_logged_out_handler)
-post_delete.connect(post_delete_session_handler, sender=Session)
+user_logged_in.connect(create_session)
+user_logged_in.connect(check_password)
+user_logged_out.connect(delete_session)
+post_delete.connect(post_delete_session, sender=Session)

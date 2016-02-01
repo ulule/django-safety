@@ -17,23 +17,25 @@ class Fixtures(Exam):
     DEVICE = 'Safari 6.0.2 - Mac OS X 10.8.2'
     LOCATION = 'Mountain View, United States'
     REMOTE_ADDR = '66.249.64.0'
+    USER_PASSWORD = 'secret'
 
     @fixture
     def user(self):
         return User.objects.create_superuser(
             username='johndoe',
             email='johndoe@example.com',
-            password='secret')
+            password=self.USER_PASSWORD)
 
 
 class BaseTestCase(Fixtures, TestCase):
-    def login_user(self):
+    def login_user(self, password=None):
         admin_login_url = reverse('admin:login')
+        password = password or self.USER_PASSWORD
         self.client.post(
             admin_login_url,
             data={
                 'username': self.user.username,
-                'password': 'secret',
+                'password': password,
                 'next': '/admin/',
             },
             REMOTE_ADDR=self.REMOTE_ADDR,
