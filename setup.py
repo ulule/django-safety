@@ -13,12 +13,13 @@ with open(os.path.join(root, 'README.rst')) as f:
 
 version = __import__('safety').__version__
 
-install_requires = ['six', 'ua-parser']
+install_requires = [
+    'six',
+    'ua-parser',
+]
 
 if django.VERSION >= (1, 9):
     install_requires.append('geoip2')
-else:
-    install_requires.append('GeoIP')
 
 
 setup(

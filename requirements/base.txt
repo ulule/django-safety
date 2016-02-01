@@ -1,4 +1,3 @@
 six
 ua-parser
-GeoIP
 geoip2
