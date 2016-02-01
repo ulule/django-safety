@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('user_agent', models.CharField(max_length=200, verbose_name='user agent')),
                 ('location', models.CharField(max_length=255, verbose_name='location')),
                 ('device', models.CharField(blank=True, max_length=200, null=True, verbose_name='device')),
-                ('expire_date', models.DateTimeField(db_index=True, verbose_name='expiry date')),
+                ('expiration_date', models.DateTimeField(db_index=True, verbose_name='expiration date')),
                 ('last_activity', models.DateTimeField(auto_now=True, verbose_name='last activity')),
                 ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='user')),
             ],

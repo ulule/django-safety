@@ -10,7 +10,7 @@ class SessionAdmin(admin.ModelAdmin):
     raw_id_fields = ('user',)
 
     def is_valid(self, obj):
-        return obj.expire_date > now()
+        return obj.expiration_date > now()
     is_valid.boolean = True
 
 

@@ -31,7 +31,7 @@ class SessionManager(models.Manager):
             user_agent=user_agent,
             device=device,
             location=location,
-            expire_date=request.session.get_expiry_date())
+            expiration_date=request.session.get_expiry_date())
 
 
 @python_2_unicode_compatible
@@ -42,7 +42,7 @@ class Session(models.Model):
     user_agent = models.CharField(verbose_name=_('user agent'), max_length=200)
     location = models.CharField(verbose_name=_('location'), max_length=255)
     device = models.CharField(verbose_name=_('device'), max_length=200, blank=True, null=True)
-    expire_date = models.DateTimeField(verbose_name=_('expiry date'), db_index=True)
+    expiration_date = models.DateTimeField(verbose_name=_('expiration date'), db_index=True)
     last_activity = models.DateTimeField(verbose_name=_('last activity'), auto_now=True)
 
     objects = SessionManager()

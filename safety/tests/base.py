@@ -50,6 +50,6 @@ class BaseTestCase(Fixtures, TestCase):
                 location=self.LOCATION,
                 device=self.DEVICE,
                 user_agent=self.UA,
-                expire_date=self.client.session.get_expiry_date())
+                expiration_date=self.client.session.get_expiry_date())
             sessions.append(session)
         return sessions
