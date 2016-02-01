@@ -31,3 +31,17 @@ LOCATION_RESOLVER = getattr(
     settings,
     'SAFETY_LOCATION_RESOLVER',
     'safety.resolvers.location')
+
+
+# The querystring argument to be used for redirection
+REDIRECT_FIELD_NAME = getattr(
+    settings,
+    'SAFETY_REDIRECT_FIELD_NAME',
+    'next')
+
+
+# The URL name of password reset view.
+PASSWORD_RESET_URL_NAME = getattr(
+    settings,
+    'SAFETY_PASSWORD_RESET_URL_NAME',
+    'password_reset')

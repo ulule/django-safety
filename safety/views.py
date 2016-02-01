@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.core.urlresolvers import reverse_lazy
+
+try:
+    from urllib.parse import urlparse, urlunparse
+except ImportError:  # pragma: no cover
+    # Python 2 fallback
+    from urlparse import urlparse, urlunparse  # noqa
+
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.http import HttpResponseRedirect, QueryDict
 from django.views.generic import ListView, DeleteView, View
 from django.views.generic.edit import DeletionMixin
 
@@ -30,3 +38,15 @@ class SessionDeleteOtherView(LoginRequiredMixin, SessionMixin, DeletionMixin, Vi
 
     def get_success_url(self):
         return str(reverse_lazy('safety:session_list'))
+
+
+def redirect_to_password_reset(next_url):
+    """
+    Redirects the user to the password reset page,
+    passing the given 'next' page.
+    """
+    url_parts = list(urlparse(reverse(app_settings.PASSWORD_RESET_URL_NAME)))
+    querystring = QueryDict(url_parts[4], mutable=True)
+    querystring[app_settings.REDIRECT_FIELD_NAME] = next_url
+    url_parts[4] = querystring.urlencode(safe='/')
+    return HttpResponseRedirect(urlunparse(url_parts))

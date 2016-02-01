@@ -9,11 +9,69 @@ from django.contrib.auth.signals import (
 from django.db.models.signals import post_delete
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from . import app_settings
 from . import utils
 
+
+# -----------------------------------------------------------------------------
+# PasswordReset
+# -----------------------------------------------------------------------------
+
+class PasswordResetManager(models.Manager):
+    def get_for_user(self, user):
+        try:
+            reset = PasswordReset.objects.get(user=user)
+        except PasswordReset.DoesNotExist:
+            reset = PasswordReset.objects.create(
+                user=user,
+                last_reset=user.date_joined,
+                reset_required=False)
+        return reset
+
+    def update_for_user(self, user):
+        try:
+            reset = PasswordReset.objects.get(user=user)
+            reset.last_reset = now
+            reset.reset_required = False
+            reset.save()
+        except PasswordReset.DoesNotExist:
+            reset = PasswordReset.objects.create(
+                user=user,
+                last_reset=user.date_joined,
+                reset_required=False)
+        return reset
+
+
+@python_2_unicode_compatible
+class PasswordReset(models.Model):
+    user = models.OneToOneField(
+        getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
+        verbose_name=_('user'),
+        primary_key=True,
+        related_name='safety_password_reset')
+
+    reset_required = models.BooleanField(verbose_name=_('reset required'), db_index=True, default=False)
+    last_reset = models.DateTimeField(verbose_name=_('last reset'))
+
+    objects = PasswordResetManager()
+
+    class Meta:
+        verbose_name = _('password reset')
+        verbose_name_plural = _('password resets')
+        index_together = [
+            ['reset_required', 'last_reset'],
+        ]
+
+    def __str__(self):
+        return '%s -- %s' % (self.user, self.last_reset)
+
+
+# -----------------------------------------------------------------------------
+# Session
+# -----------------------------------------------------------------------------
 
 class SessionManager(models.Manager):
     def create_session(self, request, user):

@@ -7,6 +7,7 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
+
     initial = True
 
     dependencies = [
@@ -14,6 +15,18 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.CreateModel(
+            name='PasswordReset',
+            fields=[
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='safety_password_reset', serialize=False, to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                ('reset_required', models.BooleanField(db_index=True, default=False, verbose_name='reset required')),
+                ('last_reset', models.DateTimeField(verbose_name='last reset')),
+            ],
+            options={
+                'verbose_name': 'password reset',
+                'verbose_name_plural': 'password resets',
+            },
+        ),
         migrations.CreateModel(
             name='Session',
             fields=[
@@ -31,5 +44,9 @@ class Migration(migrations.Migration):
                 'verbose_name': 'session',
                 'verbose_name_plural': 'sessions',
             },
+        ),
+        migrations.AlterIndexTogether(
+            name='passwordreset',
+            index_together=set([('reset_required', 'last_reset')]),
         ),
     ]
