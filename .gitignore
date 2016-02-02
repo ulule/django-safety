@@ -40,3 +40,4 @@ geoip
 *.mmdb
 *.gz
 *.dat
+data/
