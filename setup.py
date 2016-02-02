@@ -25,7 +25,7 @@ if django.VERSION >= (1, 9):
 setup(
     name='django-safety',
     version=version,
-    description='Django application to control user active sessions',
+    description='Generic Django application for safer user accounts",
     long_description=readme,
     author='Gilles Fabio',
     author_email='gilles.fabio@gmail.com',

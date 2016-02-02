@@ -1,7 +1,7 @@
 django-safety
 =============
 
-**Django application for safer user accounts**
+**Generic Django application for safer user accounts.**
 
 Features
 --------
