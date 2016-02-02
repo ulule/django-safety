@@ -1,24 +1,36 @@
 django-safety
 =============
 
-**Django application to control user active sessions.**
+**Django application for safer user accounts**
 
-.. image:: https://secure.travis-ci.org/ulule/django-safety.png?branch=master
-    :alt: Build Status
-    :target: http://travis-ci.org/ulule/django-safety
+Features
+--------
+
+Sessions
+~~~~~~~~
+
+* User can see all active sessions
+* User can disable a given active session
+* User can disable all active sessions (other than the current one)
+
+Password reset
+~~~~~~~~~~~~~~
+
+* Administrators can require a password reset for any user
 
 How it works
 ------------
 
-This application is a lightweight version of
-`django-user-session <https://github.com/Bouke/django-user-sessions>`_.
+This applications:
 
-The main changes are:
-
-* Does not use middleware
+* Does not use any middleware
 * Does not touch to ``django.contrib.sessions``
 * Does not touch to ``django.contrib.sessions.middleware.SessionMiddleware``
 * Works with any session engine
+* Uses ``django.contrib.auth`` built-in views
+
+Sessions
+~~~~~~~~
 
 Workflow:
 
@@ -34,10 +46,21 @@ Workflow:
 10. We connect the logic to the ``user_logged_out`` signal
 11. We delete the related ``safety.models.Session`` instance
 
+Password reset
+~~~~~~~~~~~~~~
+
+Workflow:
+
+1. Administrator sets ``user.reset_required`` to ``True``
+2. When user logs in, it will be redirected to ``django.contrib.auth.views.password_reset`` view
+3. Until the user does not change her password, she is not authorized to sign in
+4. User changes her password
+5. She is authorized to sign in
+
 Installation
 ------------
 
-First, you need to install GeoIP.
+First, you need to install GeoIP library.
 
 On OS X with Homebrew:
 
