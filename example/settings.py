@@ -1,5 +1,8 @@
 import os
 
+import django
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'zn=kw41f9nhe1lse8minnu0s-@7b+q(exccs5d-1vil$^ees&#'
@@ -72,5 +75,9 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'auth.User'
 LOGIN_URL = '/admin/login/'
-GEOIP_PATH = BASE_DIR
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+GEOIP_DIR_PATH = os.path.join(BASE_DIR, 'data', 'geoip')
+GEOIP2_DIR_PATH = os.path.join(BASE_DIR, 'data', 'geoip2')
+GEOIP_PATH = GEOIP2_DIR_PATH if django.VERSION >= (1, 9) else GEOIP_DIR_PATH
