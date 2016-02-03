@@ -23,9 +23,9 @@ class PasswordReset(models.Model):
         primary_key=True,
         related_name='safety_password_reset')
 
-    reset_required = models.BooleanField(verbose_name=_('reset required'), db_index=True, default=False)
+    required = models.BooleanField(verbose_name=_('required'), db_index=True, default=False)
     last_password = models.CharField(verbose_name=_('last password'), max_length=255)
-    last_reset = models.DateTimeField(verbose_name=_('last reset'), null=True, blank=True)
+    last_reset_date = models.DateTimeField(verbose_name=_('last reset date'), null=True, blank=True)
 
     objects = managers.PasswordResetManager()
 

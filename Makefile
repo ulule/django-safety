@@ -18,6 +18,9 @@ geoip:
 	@(gunzip -d GeoLite2-City.mmdb.gz > data/geoip2/)
 	@(gunzip -d GeoLiteCity.dat.gz > data/geoip/)
 
+migrate:
+	@(ENV=example python manage.py makemigrations safety)
+
 example-clean:
 	@(rm -rf example.db)
 

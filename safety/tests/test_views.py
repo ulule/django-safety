@@ -99,12 +99,12 @@ class ViewsTest(BaseTestCase):
 
         self.assertEqual(obj.user, self.user)
         self.assertEqual(obj.last_password, self.user.password)
-        self.assertFalse(obj.reset_required)
-        self.assertIsNone(obj.last_reset)
+        self.assertFalse(obj.required)
+        self.assertIsNone(obj.last_reset_date)
 
         # Now, let's force user to reset her password.
 
-        obj.reset_required = True
+        obj.required = True
         obj.save()
 
         r = self.client.get(reverse('home'))

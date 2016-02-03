@@ -11,7 +11,7 @@ def password_reset_required(func):
         if not request.user.is_authenticated():
             return func(request, *args, **kwargs)
 
-        if PasswordReset.objects.is_reset_required(user=request.user):
+        if PasswordReset.objects.is_required_for_user(user=request.user):
             return redirect_to_password_reset(request.get_full_path())
 
         return func(request, *args, **kwargs)

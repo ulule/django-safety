@@ -28,9 +28,9 @@ class ModelsTest(BaseTestCase):
         obj = PasswordReset.objects.first()
 
         self.assertEqual(obj.user, self.user)
-        self.assertIsNone(obj.last_reset)
+        self.assertIsNone(obj.last_reset_date)
         self.assertEqual(obj.last_password, self.user.password)
-        self.assertFalse(obj.reset_required)
+        self.assertFalse(obj.required)
 
         self.user.set_password('foo')
         self.user.save()
@@ -40,6 +40,6 @@ class ModelsTest(BaseTestCase):
         obj = PasswordReset.objects.first()
 
         self.assertEqual(obj.user, self.user)
-        self.assertIsNotNone(obj.last_reset)
+        self.assertIsNotNone(obj.last_reset_date)
         self.assertEqual(obj.last_password, self.user.password)
-        self.assertFalse(obj.reset_required)
+        self.assertFalse(obj.required)

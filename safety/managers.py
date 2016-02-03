@@ -12,16 +12,16 @@ class PasswordResetManager(models.Manager):
             user=user,
             defaults={'last_password': user.password})
 
-    def is_reset_required(self, user):
+    def is_required_for_user(self, user):
         obj, created = self.get_or_create_for_user(user=user)
-        return obj.reset_required
+        return obj.required
 
     def check_password(self, user):
         obj, created = self.get_or_create_for_user(user=user)
         if obj.last_password != user.password:
             obj.last_password = user.password
-            obj.last_reset = now()
-            obj.reset_required = False
+            obj.last_reset_date = now()
+            obj.required = False
             obj.save()
 
 

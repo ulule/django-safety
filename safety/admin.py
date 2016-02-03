@@ -9,7 +9,7 @@ from .models import (
 
 
 class PasswordResetAdmin(admin.ModelAdmin):
-    list_display = ('user', 'last_reset', 'reset_required')
+    list_display = ('user', 'last_reset_date', 'required')
     raw_id_fields = ('user',)
 
 
