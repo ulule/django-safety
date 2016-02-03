@@ -7,40 +7,12 @@ from django.contrib.auth.signals import (
 )
 
 from django.db.models.signals import post_delete
-from django.db import models, transaction
+from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-from . import app_settings
 from . import utils
-
-
-# -----------------------------------------------------------------------------
-# PasswordReset
-# -----------------------------------------------------------------------------
-
-class PasswordResetManager(models.Manager):
-    def get_or_create_for_user(self, user):
-        try:
-            obj = PasswordReset.objects.get(user=user)
-        except PasswordReset.DoesNotExist:
-            obj = PasswordReset.objects.create(
-                user=user,
-                last_password=user.password)
-        return obj
-
-    def is_reset_required(self, user):
-        obj = self.get_or_create_for_user(user=user)
-        return obj.reset_required
-
-    def check_password(self, user):
-        obj = self.get_or_create_for_user(user=user)
-        if obj.last_password != user.password:
-            obj.last_password = user.password
-            obj.last_reset = now()
-            obj.reset_required = False
-            obj.save()
+from . import managers
 
 
 @python_2_unicode_compatible
@@ -55,7 +27,7 @@ class PasswordReset(models.Model):
     last_password = models.CharField(verbose_name=_('last password'), max_length=255)
     last_reset = models.DateTimeField(verbose_name=_('last reset'), null=True, blank=True)
 
-    objects = PasswordResetManager()
+    objects = managers.PasswordResetManager()
 
     class Meta:
         verbose_name = _('password reset')
@@ -63,37 +35,6 @@ class PasswordReset(models.Model):
 
     def __str__(self):
         return '%s - %s' % (self.user, self.last_reset)
-
-
-# -----------------------------------------------------------------------------
-# Session
-# -----------------------------------------------------------------------------
-
-class SessionManager(models.Manager):
-    def create_session(self, request, user):
-        ip = utils.resolve(app_settings.IP_RESOLVER, request)
-        device = utils.resolve(app_settings.DEVICE_RESOLVER, request)
-        location = utils.resolve(app_settings.LOCATION_RESOLVER, request)
-
-        user_agent = request.META.get('HTTP_USER_AGENT', '')
-        user_agent = user_agent[:200] if user_agent else user_agent
-
-        try:
-            with transaction.atomic():
-                obj = self.create(
-                    user=user,
-                    session_key=request.session.session_key,
-                    ip=ip,
-                    user_agent=user_agent,
-                    device=device,
-                    location=location,
-                    expiration_date=request.session.get_expiry_date())
-        except IntegrityError:
-            obj = self.get(
-                user=user,
-                session_key=request.session.session_key)
-
-        return obj
 
 
 @python_2_unicode_compatible
@@ -107,7 +48,7 @@ class Session(models.Model):
     expiration_date = models.DateTimeField(verbose_name=_('expiration date'), db_index=True)
     last_activity = models.DateTimeField(verbose_name=_('last activity'), auto_now=True)
 
-    objects = SessionManager()
+    objects = managers.SessionManager()
 
     class Meta:
         verbose_name = _('session')
