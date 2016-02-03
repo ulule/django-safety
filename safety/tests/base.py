@@ -7,6 +7,7 @@ from exam.cases import Exam
 from exam.decorators import fixture
 
 from safety.models import Session
+from safety.utils import get_session_store
 
 
 class Fixtures(Exam):
@@ -31,6 +32,7 @@ class BaseTestCase(Fixtures, TestCase):
     def login_user(self, password=None):
         admin_login_url = reverse('admin:login')
         password = password or self.USER_PASSWORD
+
         self.client.post(
             admin_login_url,
             data={
@@ -42,16 +44,19 @@ class BaseTestCase(Fixtures, TestCase):
             HTTP_USER_AGENT=self.UA)
 
     def create_fake_sessions(self):
+        store = get_session_store()
+
         sessions = []
         for x in range(10):
-            self.client.session.save()
+            store.create()
             session = Session.objects.create(
                 user=self.user,
-                session_key=self.client.session.session_key,
+                session_key=store.session_key,
                 ip=self.REMOTE_ADDR,
                 location=self.LOCATION,
                 device=self.DEVICE,
                 user_agent=self.UA,
-                expiration_date=self.client.session.get_expiry_date())
+                expiration_date=store.get_expiry_date())
             sessions.append(session)
+
         return sessions
