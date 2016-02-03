@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import django
 
-from . import app_settings
-
 
 if django.VERSION >= (1, 9):
     from importlib import import_module  # noqa

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.models import User
-
 from .base import BaseTestCase
 
 from safety.models import (

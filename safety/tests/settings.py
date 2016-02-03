@@ -78,4 +78,4 @@ LOGIN_URL = '/admin/login/'
 
 GEOIP_DIR_PATH = os.path.join(BASE_DIR, 'data', 'geoip')
 GEOIP2_DIR_PATH = os.path.join(BASE_DIR, 'data', 'geoip2')
-GEOIP_PATH = os.getenv('GEOIP_PATH', GEOIP2_DIR_PATH ) if django.VERSION >= (1, 9) else GEOIP_DIR_PATH
+GEOIP_PATH = os.getenv('GEOIP_PATH', GEOIP2_DIR_PATH) if django.VERSION >= (1, 9) else GEOIP_DIR_PATH

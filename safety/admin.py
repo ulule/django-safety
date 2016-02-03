@@ -22,6 +22,5 @@ class SessionAdmin(admin.ModelAdmin):
     is_valid.boolean = True
 
 
-
 admin.site.register(PasswordReset, PasswordResetAdmin)
 admin.site.register(Session, SessionAdmin)
