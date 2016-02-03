@@ -7,7 +7,7 @@ from django.contrib.auth.signals import (
 )
 
 from django.db.models.signals import post_delete
-from django.db import models
+from django.db import models, transaction
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -18,16 +18,6 @@ from . import utils
 
 # -----------------------------------------------------------------------------
 # PasswordReset
-#
-# Process is:
-#
-# - We set reset_required to True
-# - User logs in
-# - We retrieve related password_reset instance or we create it
-# - If created, we only store user and current password
-# - If exists, we compare passwords
-# - If password does not match, user has updated her password so we update instance
-#
 # -----------------------------------------------------------------------------
 
 class PasswordResetManager(models.Manager):
@@ -89,26 +79,31 @@ class SessionManager(models.Manager):
         user_agent = user_agent[:200] if user_agent else user_agent
 
         try:
-            return self.get(session_key=request.session.session_key)
-        except Session.DoesNotExist:
-            return self.create(
+            with transaction.atomic():
+                obj = self.create(
+                    user=user,
+                    session_key=request.session.session_key,
+                    ip=ip,
+                    user_agent=user_agent,
+                    device=device,
+                    location=location,
+                    expiration_date=request.session.get_expiry_date())
+        except IntegrityError:
+            obj = self.get(
                 user=user,
-                session_key=request.session.session_key,
-                ip=ip,
-                user_agent=user_agent,
-                device=device,
-                location=location,
-                expiration_date=request.session.get_expiry_date())
+                session_key=request.session.session_key)
+
+        return obj
 
 
 @python_2_unicode_compatible
 class Session(models.Model):
     user = models.ForeignKey(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'), verbose_name=_('user'), null=True)
-    session_key = models.CharField(verbose_name=_('session key'), max_length=40)
+    session_key = models.CharField(verbose_name=_('session key'), max_length=40, unique=True)
     ip = models.GenericIPAddressField(verbose_name=_('IP'))
     user_agent = models.CharField(verbose_name=_('user agent'), max_length=200)
     location = models.CharField(verbose_name=_('location'), max_length=255)
-    device = models.CharField(verbose_name=_('device'), max_length=200, blank=True, null=True)
+    device = models.CharField(verbose_name=_('device'), max_length=200)
     expiration_date = models.DateTimeField(verbose_name=_('expiration date'), db_index=True)
     last_activity = models.DateTimeField(verbose_name=_('last activity'), auto_now=True)
 
