@@ -19,7 +19,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PasswordReset',
             fields=[
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='safety_password_reset', serialize=False, to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='safety_password_reset', serialize=False, to=settings.AUTH_USER_MODEL, verbose_name='user')),
                 ('required', models.BooleanField(db_index=True, default=False, verbose_name='required')),
                 ('last_password', models.CharField(max_length=255, verbose_name='last password')),
                 ('last_reset_date', models.DateTimeField(blank=True, null=True, verbose_name='last reset date')),

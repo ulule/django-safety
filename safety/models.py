@@ -20,7 +20,6 @@ class PasswordReset(models.Model):
     user = models.OneToOneField(
         getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
         verbose_name=_('user'),
-        primary_key=True,
         related_name='safety_password_reset')
 
     required = models.BooleanField(verbose_name=_('required'), db_index=True, default=False)
