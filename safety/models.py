@@ -16,24 +16,23 @@ from . import managers
 
 
 @python_2_unicode_compatible
-class PasswordReset(models.Model):
+class PasswordChange(models.Model):
     user = models.OneToOneField(
         getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
         verbose_name=_('user'),
-        related_name='safety_password_reset')
+        related_name='safety_password_change')
 
     required = models.BooleanField(verbose_name=_('required'), db_index=True, default=False)
-    last_password = models.CharField(verbose_name=_('last password'), max_length=255)
-    last_reset_date = models.DateTimeField(verbose_name=_('last reset date'), null=True, blank=True)
+    last_change_date = models.DateTimeField(verbose_name=_('last change date'), null=True, blank=True)
 
-    objects = managers.PasswordResetManager()
+    objects = managers.PasswordChangeManager()
 
     class Meta:
-        verbose_name = _('password reset')
-        verbose_name_plural = _('password resets')
+        verbose_name = _('password change')
+        verbose_name_plural = _('password changes')
 
     def __str__(self):
-        return '%s - %s' % (self.user, self.last_reset)
+        return '%s - %s' % (self.user, self.last_change_date)
 
 
 @python_2_unicode_compatible
@@ -66,11 +65,6 @@ def create_session(sender, request, user, **kwargs):
     Session.objects.create_session(request, user)
 
 
-# Connected to user_logged_in
-def check_password(sender, request, user, **kwargs):
-    PasswordReset.objects.check_password(user=user)
-
-
 # Connected to user_logged_out
 def delete_session(sender, request, user, **kwargs):
     try:
@@ -90,6 +84,5 @@ def post_delete_session(sender, instance, **kwargs):
 
 
 user_logged_in.connect(create_session)
-user_logged_in.connect(check_password)
 user_logged_out.connect(delete_session)
 post_delete.connect(post_delete_session, sender=Session)

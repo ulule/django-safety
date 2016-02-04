@@ -3,13 +3,13 @@ from django.contrib import admin
 from django.utils.timezone import now
 
 from .models import (
-    PasswordReset,
+    PasswordChange,
     Session,
 )
 
 
-class PasswordResetAdmin(admin.ModelAdmin):
-    list_display = ('user', 'last_reset_date', 'required')
+class PasswordChangeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'last_change_date', 'required')
     raw_id_fields = ('user',)
 
 
@@ -22,5 +22,5 @@ class SessionAdmin(admin.ModelAdmin):
     is_valid.boolean = True
 
 
-admin.site.register(PasswordReset, PasswordResetAdmin)
+admin.site.register(PasswordChange, PasswordChangeAdmin)
 admin.site.register(Session, SessionAdmin)

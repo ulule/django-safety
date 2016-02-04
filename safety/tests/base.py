@@ -27,6 +27,9 @@ class Fixtures(Exam):
             email='johndoe@example.com',
             password=self.USER_PASSWORD)
 
+    def reload(self):
+        self.user = User.objects.get(pk=self.user.pk)
+
 
 class BaseTestCase(Fixtures, TestCase):
     def login_user(self, password=None):

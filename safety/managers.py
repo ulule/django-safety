@@ -6,26 +6,22 @@ from . import app_settings
 from . import utils
 
 
-class PasswordResetManager(models.Manager):
+class PasswordChangeManager(models.Manager):
     def get_or_create_for_user(self, user):
-        return self.get_or_create(
-            user=user,
-            defaults={'last_password': user.password})
+        return self.get_or_create(user=user)
 
     def is_required_for_user(self, user):
         obj, created = self.get_or_create_for_user(user=user)
         return obj.required
 
-    def check_password(self, user):
-        obj, created = self.get_or_create_for_user(user=user)
-        if obj.last_password != user.password:
-            obj.last_password = user.password
-            obj.last_reset_date = now()
-            obj.required = False
-            obj.save()
-
 
 class SessionManager(models.Manager):
+    def active(self, user=None):
+        qs = self.filter(expiration_date__gt=now())
+        if user is not None:
+            qs = qs.filter(user=user)
+        return qs.order_by('-last_activity')
+
     def create_session(self, request, user):
         ip = utils.resolve(app_settings.IP_RESOLVER, request)
         device = utils.resolve(app_settings.DEVICE_RESOLVER, request)
