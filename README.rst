@@ -11,28 +11,18 @@ Sessions
 
 * User can see all active sessions
 * User can disable a given active session
-* User can disable all active sessions (other than the current one)
+* User can disable all active sessions
 
-Password reset
-~~~~~~~~~~~~~~
+Force password change
+~~~~~~~~~~~~~~~~~~~~~
 
-* Administrators can require a password reset for any user
+* Administrators can require a password change for any user
 
-How it works
-------------
-
-This applications:
-
-* Does not use any middleware
-* Does not touch to ``django.contrib.sessions``
-* Does not touch to ``django.contrib.sessions.middleware.SessionMiddleware``
-* Works with any session engine
-* Uses ``django.contrib.auth`` built-in views
+Workflows
+---------
 
 Sessions
 ~~~~~~~~
-
-Workflow:
 
 1. User logs in
 2. We connect the logic to the ``user_logged_in`` signal
@@ -46,21 +36,22 @@ Workflow:
 10. We connect the logic to the ``user_logged_out`` signal
 11. We delete the related ``safety.models.Session`` instance
 
-Password reset
-~~~~~~~~~~~~~~
+Force password change
+~~~~~~~~~~~~~~~~~~~~~
 
-Workflow:
-
-1. Administrator sets ``user.reset_required`` to ``True``
-2. When user logs in, it will be redirected to ``django.contrib.auth.views.password_reset`` view
-3. Until the user does not change her password, she is not authorized to sign in
-4. User changes her password
-5. She is authorized to sign in
+1. Administrator creates a ``PasswordChange`` instance and sets ``required`` to ``True``
+2. When user logs in, it will be redirected to password change form
+3. Until the user does not change its password, it is not authorized to go elsewhere
+4. User changes its password
+5. It is now authorized to go elsewhere
 
 Installation
 ------------
 
-First, you need to install GeoIP library.
+Installing prerequisites
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+GeoIP library must be installed on your server.
 
 On OS X with Homebrew:
 
@@ -68,7 +59,7 @@ On OS X with Homebrew:
 
     brew install geoip
 
-Then, you need GeoIP databases.
+You also need the GeoIP databases.
 
 For Django >= 1.9, download City and Country databases as binary (not CSV):
 
@@ -85,8 +76,10 @@ directory. Once done, set ``GEOIP_PATH`` setting pointing to this directory:
 
     GEOIP_PATH = '/absolute/path/to/maxmind/db/directory'
 
-Now, let's install django-safety:
+Installing django-safety
+~~~~~~~~~~~~~~~~~~~~~~~~
 
+Install
 .. code-block:: bash
 
     $ pip install django-safety
@@ -96,15 +89,80 @@ In your ``settings.py``, add ``safety`` to ``INSTALLED_APPS``:
 .. code-block:: python
 
     INSTALLED_APPS = (
-        # Your other apps here
+        # Your other apps here.
         'safety',
     )
+
+In your ``urls.py``, include ``safety.urls`` under ``safety`` namespace.
+
+.. code-block:: python
+
+    urlpatterns = [
+        # Your other URLs here.
+        url(r'^security/', include('safety.urls', namespace='safety')),
+    ]
 
 Synchronize the database:
 
 .. code-block:: bash
 
     $ python manage.py migrate safety
+
+Great. The session feature is ready.
+
+If you want to enable the password change feature, read the next.
+
+Enabling password change feature
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To enable this feature, you have two choices:
+
+* You want to protect only specific views? Use ``password_change_required()`` decorator
+* You want to protect your whole application? Use ``PasswordChangeMiddleware`` middleware
+
+The decorator works as any Django view decorator.
+
+.. code-block:: python
+
+    #
+    # In your urls.py
+    #
+
+    from safety.decorators import password_change_required
+    from .views import protect_me
+
+    urlpatterns = [
+        # Other URLs here.
+        url(r'^protect-me/$', password_change_required(protect_me)),
+    ]
+
+    #
+    # Or in your views.py (it's up to you)
+    #
+    from django.shortcuts import render
+    from safety.decorators import password_change_required
+
+    @password_change_required
+    def protect_me(request):
+        return render(request, 'protect_me.html')
+
+The middleware works as any Django middleware.
+
+Add ``safety.middleware.PasswordChangeMiddleware`` middleware in your ``settings.py``:
+
+.. code-block:: python
+
+    MIDDLEWARE_CLASSES = [
+        'django.middleware.security.SecurityMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'safety.middleware.PasswordChangeMiddleware',
+    ]
 
 Done.
 
@@ -135,6 +193,15 @@ Development
     $ make example-migrate
     $ make example-user
     $ make example-serve
+
+Contribute
+----------
+
+1. Create an issue (**before** submitting pull requests)
+2. Submit your bug or feature request
+3. You want to fix or code it yourself? Great! Fork the project
+4. Create a branch, always add tests and make sure they all pass with ``tox``
+5. Submit a pull request
 
 Compatibility
 -------------
