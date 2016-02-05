@@ -1,18 +1,28 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.http import JsonResponse
+from django.core.urlresolvers import reverse
+from django.shortcuts import render, redirect
 
-from safety.decorators import password_reset_required
+from safety.models import PasswordChange
 
 
 def home(request):
-    return JsonResponse({'message': 'Hello'})
+    return render(request, 'home.html')
+
+
+def update_password(request):
+    if request.user.is_authenticated():
+        pr, created = PasswordChange.objects.get_or_create_for_user(request.user)
+        pr.required = True
+        pr.save()
+    return redirect(reverse('home'))
 
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^account/', include('django.contrib.auth.urls')),
     url(r'^security/', include('safety.urls', namespace='safety')),
-    url(r'^$', password_reset_required(home), name='home'),
+    url(r'^update-password/$', update_password, name='update-password'),
+    url(r'^$', home, name='home'),
 ]
