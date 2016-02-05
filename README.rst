@@ -110,10 +110,10 @@ Synchronize the database:
 
 Great. The session feature is ready.
 
-If you want to enable the password change feature, read the next.
+If you want to enable the "force password change" feature, read the next.
 
-Enabling password change feature
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Enabling "force password change" feature
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To enable this feature, you have two choices:
 
@@ -188,6 +188,9 @@ Development
 
     # Launch test suite
     $ make test
+
+    # Launch test suite with tox to check compatibility
+    $ tox
 
     # Run the example project (default user username is "johndoe")
     $ make example-migrate
