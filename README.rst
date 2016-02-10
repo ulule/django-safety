@@ -80,6 +80,7 @@ Installing django-safety
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Install
+
 .. code-block:: bash
 
     $ pip install django-safety
