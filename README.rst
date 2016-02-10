@@ -167,6 +167,25 @@ Add ``safety.middleware.PasswordChangeMiddleware`` middleware in your ``settings
 
 Done.
 
+Settings
+--------
+
++-------------------------------------------+---------------------------------------------------------------------+
+| Setting                                   | Description                                                         |
++===========================================+=====================================================================+
+| ``SAFETY_LOGIN_REQUIRED_MIXIN_CLASS``     | The Python path to your own "login required" mixin class.           |
+|                                           | Defaults to ``safety.mixins.LoginRequiredMixin``.                   |
++-------------------------------------------+---------------------------------------------------------------------+
+| ``SAFETY_IP_RESOLVER``                    | The Python path to your own IP resolver callable.                   |
+|                                           | Defaults to ``safety.resolvers.remote_addr_ip``.                    |
++-------------------------------------------+---------------------------------------------------------------------+
+| ``SAFETY_DEVICE_RESOLVER``                | The Python path to your own device resolver callable.               |
+|                                           | Defaults to ``safety.resolvers.device``.                            |
++-------------------------------------------+---------------------------------------------------------------------+
+| ``SAFETY_LOCATION_RESOLVER``              | The Python path to your own location resolver callable.             |
+|                                           | Defaults to ``safety.resolvers.location``.                          |
++-------------------------------------------+---------------------------------------------------------------------+
+
 Development
 -----------
 
