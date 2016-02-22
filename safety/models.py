@@ -45,6 +45,7 @@ class Session(models.Model):
     device = models.CharField(verbose_name=_('device'), max_length=200)
     expiration_date = models.DateTimeField(verbose_name=_('expiration date'), db_index=True)
     last_activity = models.DateTimeField(verbose_name=_('last activity'), auto_now=True)
+    active = models.BooleanField(default=True)
 
     objects = managers.SessionManager()
 
@@ -66,11 +67,12 @@ def create_session(sender, request, user, **kwargs):
 
 
 # Connected to user_logged_out
-def delete_session(sender, request, user, **kwargs):
+def deactivate_session(sender, request, user, **kwargs):
     try:
         key = request.session.session_key
         instance = Session.objects.get(user=user, session_key=key)
-        instance.delete()
+        instance.active = False
+        instance.save()
     except Session.DoesNotExist:
         pass
 
@@ -84,5 +86,5 @@ def post_delete_session(sender, instance, **kwargs):
 
 
 user_logged_in.connect(create_session)
-user_logged_out.connect(delete_session)
+user_logged_out.connect(deactivate_session)
 post_delete.connect(post_delete_session, sender=Session)

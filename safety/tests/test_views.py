@@ -23,6 +23,7 @@ class SessionsViewsTest(BaseTestCase):
         self.assertEqual(len(objects), 1)
         self.assertEqual(obj.user, self.user)
         self.assertTrue(obj.session_key)
+        self.assertTrue(obj.active)
         self.assertEqual(obj.ip, self.REMOTE_ADDR)
         self.assertEqual(obj.device, self.DEVICE)
         self.assertEqual(obj.location, self.LOCATION)

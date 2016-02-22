@@ -12,7 +12,12 @@ class ModelsTest(BaseTestCase):
         self.assertEqual(Session.objects.count(), 0)
         self.login_user()
         self.assertEqual(Session.objects.count(), 1)
+        session = Session.objects.first()
+        self.assertTrue(session.active)
         self.client.logout()
+        self.assertEqual(Session.objects.count(), 1)
+        session = Session.objects.first()
+        self.assertFalse(session.active)
 
     def test_password_change(self):
         obj, created = PasswordChange.objects.get_or_create_for_user(self.user)

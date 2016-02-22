@@ -41,6 +41,7 @@ class Migration(migrations.Migration):
                 ('expiration_date', models.DateTimeField(db_index=True, verbose_name='expiration date')),
                 ('last_activity', models.DateTimeField(auto_now=True, verbose_name='last activity')),
                 ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                ('active', models.BooleanField(default=True)),
             ],
             options={
                 'verbose_name': 'session',
