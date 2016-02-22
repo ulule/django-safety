@@ -56,6 +56,11 @@ class Session(models.Model):
     def __str__(self):
         return '%s (%s)' % (self.user, self.device)
 
+    def delete_store_session(self):
+        store = utils.get_session_store()
+        if store.exists(session_key=self.session_key):
+            store.delete(session_key=self.session_key)
+
 
 # -----------------------------------------------------------------------------
 # Signal handlers
@@ -79,10 +84,7 @@ def deactivate_session(sender, request, user, **kwargs):
 
 # Connected to post_delete for Session model
 def post_delete_session(sender, instance, **kwargs):
-    key = instance.session_key
-    store = utils.get_session_store()
-    if store.exists(session_key=key):
-        store.delete(session_key=key)
+    instance.delete_store_session()
 
 
 user_logged_in.connect(create_session)
