@@ -2,6 +2,7 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.utils.timezone import now
 
 from exam.cases import Exam
 from exam.decorators import fixture
@@ -59,6 +60,7 @@ class BaseTestCase(Fixtures, TestCase):
                 location=self.LOCATION,
                 device=self.DEVICE,
                 user_agent=self.UA,
+                last_activity=now(),
                 expiration_date=store.get_expiry_date())
             sessions.append(session)
 
