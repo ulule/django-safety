@@ -39,10 +39,13 @@ class SessionManager(models.Manager):
                     user_agent=user_agent,
                     device=device,
                     location=location,
-                    expiration_date=request.session.get_expiry_date())
+                    expiration_date=request.session.get_expiry_date(),
+                    last_activity=now())
         except IntegrityError:
             obj = self.get(
                 user=user,
                 session_key=request.session.session_key)
+            obj.last_activity = now()
+            obj.save()
 
         return obj
