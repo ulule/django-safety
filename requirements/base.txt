@@ -1,3 +1,4 @@
+Django
 six
 ua-parser
 geoip2
