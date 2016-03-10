@@ -4,9 +4,6 @@ import sys
 
 from setuptools import setup, find_packages
 
-import django
-
-
 root = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(root, 'README.rst')) as f:
     readme = f.read()
@@ -16,11 +13,8 @@ version = __import__('safety').__version__
 install_requires = [
     'six',
     'ua-parser',
+    'geoip2'
 ]
-
-if django.VERSION >= (1, 9):
-    install_requires.append('geoip2')
-
 
 setup(
     name='django-safety',
