@@ -36,8 +36,6 @@ target/
 .env
 *.sqlite3
 *.db
-geoip
 *.mmdb
 *.gz
 *.dat
-data/
