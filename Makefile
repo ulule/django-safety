@@ -12,10 +12,12 @@ test:
 	@(py.test -s --cov-report term --cov-config .coveragerc --cov=safety --color=yes safety/tests)
 
 geoip:
+	@(wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz)
 	@(wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz)
 	@(wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz)
-	@(gunzip -d GeoLite2-City.mmdb.gz > data/geoip2/GeoLite2-City.mmdb)
-	@(gunzip -d GeoLiteCity.dat.gz > data/geoip/GeoLiteCity.dat)
+	@(gunzip -d GeoIP.dat.gz && mv GeoIP.dat data/geoip/)
+	@(gunzip -d GeoLite2-City.mmdb.gz && mv GeoLite2-City.mmdb data/geoip2/)
+	@(gunzip -d GeoLiteCity.dat.gz && mv GeoLiteCity.dat data/geoip/)
 
 migrate:
 	@(ENV=example python manage.py makemigrations safety)
