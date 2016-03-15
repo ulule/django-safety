@@ -1,6 +1,11 @@
 django-safety
 =============
 
+.. image:: https://secure.travis-ci.org/ulule/django-safety.png?branch=master
+    :alt: Build Status
+    :target: http://travis-ci.org/ulule/django-safety
+
+
 **Generic Django application for safer user accounts.**
 
 Features
