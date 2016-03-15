@@ -15,8 +15,8 @@ geoip:
 	@(mkdir -p data/{geoip,geoip2})
 	@(wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz)
 	@(wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz)
-	@(gunzip -d GeoLite2-City.mmdb.gz > data/geoip2/)
-	@(gunzip -d GeoLiteCity.dat.gz > data/geoip/)
+	@(gunzip -d GeoLite2-City.mmdb.gz > data/geoip2/GeoLite2-City.mmdb)
+	@(gunzip -d GeoLiteCity.dat.gz > data/geoip/GeoLiteCity.dat)
 
 migrate:
 	@(ENV=example python manage.py makemigrations safety)

@@ -11,7 +11,6 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
-from . import utils
 from . import managers
 
 
@@ -57,7 +56,10 @@ class Session(models.Model):
         return '%s (%s)' % (self.user, self.device)
 
     def delete_store_session(self):
-        store = utils.get_session_store()
+        from .utils import get_session_store
+
+        store = get_session_store()
+
         if store.exists(session_key=self.session_key):
             store.delete(session_key=self.session_key)
 
