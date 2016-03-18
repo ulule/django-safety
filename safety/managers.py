@@ -37,22 +37,21 @@ class SessionManager(models.Manager):
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         user_agent = user_agent[:200] if user_agent else user_agent
 
-        try:
-            with transaction.atomic():
-                obj = self.create(
-                    user=user,
-                    session_key=request.session.session_key,
-                    ip=ip,
-                    user_agent=user_agent,
-                    device=device,
-                    location=location,
-                    expiration_date=request.session.get_expiry_date(),
-                    suspicious=suspicious,
-                    last_activity=now())
-        except IntegrityError:
-            obj = self.get(
+        session = self.filter(user=user, session_key=request.session.session_key)
+
+        if not session:
+            obj = self.create(
                 user=user,
-                session_key=request.session.session_key)
+                session_key=request.session.session_key,
+                ip=ip,
+                user_agent=user_agent,
+                device=device,
+                location=location,
+                expiration_date=request.session.get_expiry_date(),
+                suspicious=suspicious,
+                last_activity=now())
+        else:
+            obj = session[0]
             obj.last_activity = now()
             obj.save()
 
