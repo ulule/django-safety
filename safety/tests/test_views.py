@@ -24,9 +24,25 @@ class SessionsViewsTest(BaseTestCase):
         self.assertEqual(obj.user, self.user)
         self.assertTrue(obj.session_key)
         self.assertTrue(obj.active)
+        self.assertFalse(obj.suspicious)
         self.assertEqual(obj.ip, self.REMOTE_ADDR)
         self.assertEqual(obj.device, self.DEVICE)
         self.assertEqual(obj.location, self.LOCATION)
+
+    def test_suspicious_session(self):
+        self.create_fake_sessions()
+
+        self.login_user(ip_address='93.210.15.68')
+
+        r = self.client.get(reverse('safety:session_list'))
+        self.assertEqual(r.status_code, 200)
+
+        objects = r.context['object_list']
+        obj = r.context['object_list'][0]
+        self.assertEqual(len(objects), 11)
+        self.assertEqual(obj.location, 'Gottfrieding, Germany')
+        # User never connected from Germany
+        self.assertTrue(obj.suspicious)
 
     def test_session_delete_view(self):
         admin_login_url = reverse('admin:login')

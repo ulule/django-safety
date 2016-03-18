@@ -33,7 +33,7 @@ class Fixtures(Exam):
 
 
 class BaseTestCase(Fixtures, TestCase):
-    def login_user(self, password=None):
+    def login_user(self, password=None, ip_address=None):
         admin_login_url = reverse('admin:login')
         password = password or self.USER_PASSWORD
 
@@ -44,7 +44,7 @@ class BaseTestCase(Fixtures, TestCase):
                 'password': password,
                 'next': '/admin/',
             },
-            REMOTE_ADDR=self.REMOTE_ADDR,
+            REMOTE_ADDR=ip_address or self.REMOTE_ADDR,
             HTTP_USER_AGENT=self.UA)
 
     def create_fake_sessions(self):

@@ -27,6 +27,13 @@ class SessionManager(models.Manager):
         device = utils.resolve(app_settings.DEVICE_RESOLVER, request)
         location = utils.resolve(app_settings.LOCATION_RESOLVER, request)
 
+        suspicious = False
+
+        previous_location = self.values_list('location', flat=True).order_by('-last_activity')[:20]
+
+        if previous_location and location not in previous_location:
+            suspicious = True
+
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         user_agent = user_agent[:200] if user_agent else user_agent
 
@@ -40,6 +47,7 @@ class SessionManager(models.Manager):
                     device=device,
                     location=location,
                     expiration_date=request.session.get_expiry_date(),
+                    suspicious=suspicious,
                     last_activity=now())
         except IntegrityError:
             obj = self.get(

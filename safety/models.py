@@ -45,6 +45,7 @@ class Session(models.Model):
     expiration_date = models.DateTimeField(verbose_name=_('expiration date'), db_index=True)
     last_activity = models.DateTimeField(verbose_name=_('last activity'))
     active = models.BooleanField(default=True)
+    suspicious = models.BooleanField(default=False)
 
     objects = managers.SessionManager()
 
